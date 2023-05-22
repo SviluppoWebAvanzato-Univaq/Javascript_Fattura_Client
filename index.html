@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JAX-RS FatturaREST Client</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="res/restest.css"/>
+    </head>
+    <body>
+        <h1>JAX-RS FatturaREST Client</h1>
+        
+
+        <script src="res/testrestclient.js">/* */</script>
+        <script>
+            let tester = new TestRestClient("http://localhost:8085/FatturaREST/rest");
+			tester.doTests();
+        </script>
+    </body>
+</html>	

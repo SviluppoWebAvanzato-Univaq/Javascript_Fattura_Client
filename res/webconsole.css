@@ -1,0 +1,47 @@
+.webconsole {
+    display: flex;
+    border: 1px solid #555;
+    flex-direction: column;
+    background-color: black;
+    color: #eee;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: Lucida Console, Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 9pt;
+    font-weight: normal;
+}
+
+.webconsole > * {
+    width: 100%;
+    text-overflow: ellipsis;
+}
+
+.webconsole > .line {
+    background-color: #333;
+    color: #eee;
+    border-bottom: 0.5px solid #555;
+    padding: 2px;
+}
+
+.webconsole > .heading {
+    background-color: #006699;
+    color: white;
+    font-weight: bold;
+    border-bottom: 1px solid white;
+    padding: 5px;
+}
+
+.webconsole > .divider {
+    background-color: #555;
+    height:5px;
+}
+
+.webconsole > .error {
+    background-color: #ff0033;
+    color: #ffcccc
+}
+
+.webconsole > .success {
+    background-color: #33cc00;
+    color: #ccffcc
+}

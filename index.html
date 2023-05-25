@@ -1,19 +1,178 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>JAX-RS FatturaREST Client</title>
+        <title>Javascript FatturaREST Client</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="res/restest.css"/>
+        <link rel="stylesheet" href="res/webconsole.css"/>
+        <style>
+            body {
+                font-family: Verdana, Arial, Helvetica, sans-serif;
+                font-size: 10pt;
+            }
+        </style>
     </head>
     <body>
-        <h1>JAX-RS FatturaREST Client</h1>
-        
+        <h1>Javascript FatturaREST Client</h1>
 
-        <script src="res/testrestclient.js">/* */</script>
+        <p>This HTML page shows how to make calls to the FatturaREST RESTful API using Javascript. AJAX calls are all asynchronous, handled using Promises and async functions.</p>
+        <p>The <strong>testrestclient_xhr.js</strong> script implements a simple REST client using the XMLHTTPRequest object.
+            The <strong>testrestclient_fetch.js</strong> script implements a simple REST client using the Fetch API.
+            The <strong>testrestclient_jquery.js</strong> script implements a simple REST client using the JQuery library and its the JQuery.ajax helper.
+            The <strong>webconsole.js</strong> script (and the webconsole.css stylesheet) implements a simple output interface that is used by the client to write call traces on the webpage.</p>
+
+        <p><button id="runx">Run Tests (XMLHTTPRequest)</button> 
+            <button id="runf">Run Tests (Fetch API)</button>  
+            <button id="runj">Run Tests (JQuery)</button>  
+            <button id="stop">Stop Tests</button></p>
+
+        <div id="c" style="width: 100%; min-height: 5em;"></div>
+
+        <script src="res/webconsole.js">/* */</script>
+        <script src="res/testrestclient_fetch.js">/* */</script>
+        <script src="res/testrestclient_xhr.js">/* */</script>
+        <script src="res/jquery.min.js">/* */</script>
+        <script src="res/testrestclient_jquery.js">/* */</script>
         <script>
-            let tester = new TestRestClient("http://localhost:8085/FatturaREST/rest");
-			tester.doTests();
+            let dummy_json_entry = "{\"venditore\":{\"ragioneSociale\":\"MWT\",\"partitaIVA\":\"123456789\",\"via\":\"\",\"citta\":\"L'Aquila\",\"civico\":\"\"},\"intestazione\":{\"ragioneSociale\":\"Acquirente 505\",\"partitaIVA\":\"123456789505\",\"via\":\"\",\"citta\":\"Roma\",\"civico\":\"\"},\"numero\":1234,\"data\":\"08/10/2020\",\"prodotti\":[{\"codice\":\"P505-0\",\"descrizione\":\"Prodotto P505-0\",\"quantita\":1,\"unita\":\"N\",\"prezzoUnitario\":0.0,\"sconto\":0,\"prezzoTotale\":0.0,\"iva\":22},{\"codice\":\"P505-1\",\"descrizione\":\"Prodotto P505-1\",\"quantita\":1,\"unita\":\"N\",\"prezzoUnitario\":10.0,\"sconto\":0,\"prezzoTotale\":10.0,\"iva\":22},{\"codice\":\"P505-2\",\"descrizione\":\"Prodotto P505-2\",\"quantita\":1,\"unita\":\"N\",\"prezzoUnitario\":20.0,\"sconto\":0,\"prezzoTotale\":20.0,\"iva\":22},{\"codice\":\"P505-3\",\"descrizione\":\"Prodotto P505-3\",\"quantita\":1,\"unita\":\"N\",\"prezzoUnitario\":30.0,\"sconto\":0,\"prezzoTotale\":30.0,\"iva\":22},{\"codice\":\"P505-4\",\"descrizione\":\"Prodotto P505-4\",\"quantita\":1,\"unita\":\"N\",\"prezzoUnitario\":40.0,\"sconto\":0,\"prezzoTotale\":40.0,\"iva\":22}],\"modalitaPagamento\":\"CONTANTI\",\"totali\":{\"22\":{\"imponibile\":100.0,\"imposta\":0.0,\"generale\":0.0}},\"totaleGenerale\":{\"imponibile\":100.0,\"imposta\":0.0,\"generale\":100.0}}";
+            let baseURI = "http://localhost:8080/FatturaREST/rest";
+            //define the tests to perform
+            let tests = [
+                {description: "1 -- Lista entries (JSON)",
+                    url: baseURI + "/fatture",
+                    method: "GET",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: "application/json",
+                    authorization: null
+                },
+                {description: "1bis -- Numero entries (JSON)",
+                    url: baseURI + "/fatture/count",
+                    method: "GET",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: "application/json",
+                    authorization: null
+                },
+                {description: "3 -- Singola entry (JSON)",
+                    url: baseURI + "/fatture/2020/1234",
+                    method: "GET",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: "application/json",
+                    authorization: null
+                },
+                {description: "5 -- Filtraggio collection tramite parametri GET",
+                    url: baseURI + "/fatture?partitaIVA=8574557",
+                    method: "GET",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: "application/json",
+                    authorization: null
+                },
+                {description: "6 -- Creazione entry",
+                    url: baseURI + "/fatture",
+                    method: "POST",
+                    payload: dummy_json_entry,
+                    payloadType: "application/json",
+                    acceptType: "application/json",
+                    authorization: null
+                },
+                {description: "7 -- Aggiornamento entry",
+                    url: baseURI + "/fatture/2020/12345",
+                    method: "PUT",
+                    payload: dummy_json_entry,
+                    payloadType: "application/json",
+                    acceptType: null,
+                    authorization: null
+                },
+                {description: "8 -- Eliminazione entry",
+                    url: baseURI + "/fatture/2020/12345",
+                    method: "DELETE",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: null,
+                    authorization: null
+                },
+                {description: "9 -- Dettaglio entry (JSON)",
+                    url: baseURI + "/fatture/2020/12345/elementi",
+                    method: "GET",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: "application/json",
+                    authorization: null
+                },
+                {description: "10 -- Login",
+                    url: baseURI + "/auth/login",
+                    method: "POST",
+                    payload: "username=u&password=p",
+                    payloadType: "application/x-www-form-urlencoded",
+                    acceptType: null,
+                    authorization: null
+                },
+                {description: "11a -- Collezione per anno (richiesta soggetta ad autenticazione)",
+                    url: baseURI + "/fatture/2020",
+                    method: "GET",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: "application/json",
+                    authorization: true
+                },
+                {description: "11b -- Collezione per anno (tentativo senza autenticazione)",
+                    url: baseURI + "/fatture/2020",
+                    method: "GET",
+                    payload: null,
+                    payloadType: null,
+                    acceptType: "application/json",
+                    authorization: null
+                }];
+
+            //create the output area
+            let c = new WebConsole("c");
+            //create the REST clients
+            let t_ajax = new TestRestClient_XHR();
+            let t_fetch = new TestRestClient_Fetch();
+            let t_jquery = new TestRestClient_JQuery();
+            //setup the buttons
+            let x_b = document.getElementById("runx");
+            let f_b = document.getElementById("runf");
+            let j_b = document.getElementById("runj");
+            let s_b = document.getElementById("stop");
+            //handle button events
+            x_b.addEventListener("click", () => startTests(t_ajax));
+            f_b.addEventListener("click", () => startTests(t_fetch));
+            j_b.addEventListener("click", () => startTests(t_jquery));
+            s_b.addEventListener("click", () => stopTests());
+            //
+            function startTests(client) {
+                f_b.disabled = true;
+                x_b.disabled = true;
+                j_b.disabled = true;
+                s_b.disabled = false;
+                c.clear();
+                t_fetch.stopTests();
+                t_ajax.stopTests();
+                t_jquery.stopTests();
+                client.doTests(tests, c)
+                        .finally(() => {
+                            f_b.disabled = false;
+                            x_b.disabled = false;
+                            j_b.disabled = false;
+                            s_b.disabled = true;
+                            c.success("Tests complete");
+                        });
+            }
+            //
+            function stopTests() {
+                c.error("Tests aborted");
+                f_b.disabled = false;
+                x_b.disabled = false;
+                x_b.disabled = false;
+                s_b.disabled = true;
+                t_fetch.stopTests();
+                t_ajax.stopTests();
+                t_jquery.stopTests();
+            }
         </script>
     </body>
 </html>	
